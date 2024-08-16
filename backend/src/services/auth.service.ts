@@ -6,6 +6,8 @@ import SessionModel from "../models/session.model";
 import Usermodel from "../models/user.model";
 import VerificationCodeModel from "../models/verificationCode.model";
 import { oneYearFromNow } from "../utils/date";
+import appAssert from "../utils/appAssert";
+import { CONFLICT } from "../contants/http";
 
 export type CreateAccountParams = {
   email: string;
@@ -18,14 +20,15 @@ export const createAccount = async (data: CreateAccountParams) => {
   const existingUser = await Usermodel.exists({
     email: data.email,
   });
-  if (existingUser) {
-    throw new Error("User already exists");
-  }
+
+  appAssert(!existingUser, CONFLICT, "Email already in use");
+
   //create user
-  const user = await Usermodel.create({
+  const user = new Usermodel({
     email: data.email,
     password: data.password,
   });
+  await user.save();
   //create verifcation code
   const verificationCode = await VerificationCodeModel.create({
     userId: user._id,
@@ -50,5 +53,5 @@ export const createAccount = async (data: CreateAccountParams) => {
     expiresIn: "15m",
   });
   //return user and tokens
-  return { user, accessToken, refreshToken };
+  return { user: user.omitPassword(), accessToken, refreshToken };
 };
