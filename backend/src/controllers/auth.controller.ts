@@ -73,3 +73,5 @@ export const refreshHandler = catchErrors(async (req, res) => {
     .cookie("accessToken", accessToken, getAccessTokenCookieOptions())
     .json({ message: "Access token refreshed" });
 });
+
+export const verifyEmailHandler = catchErrors(async (req, res) => {});
