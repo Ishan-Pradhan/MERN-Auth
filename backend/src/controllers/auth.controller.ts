@@ -13,11 +13,14 @@ import {
   getRefreshTokenCookieOptions,
   setAuthCookies,
 } from "../utils/cookies";
-import { loginSchema, registerSchema } from "./auth.schemas";
+import {
+  loginSchema,
+  registerSchema,
+  verificationCodeSchema,
+} from "./auth.schemas";
 import { verifyToken } from "../utils/jwt";
 import SessionModel from "../models/session.model";
 import appAssert from "../utils/appAssert";
-import { verificationCodeSchema } from "../models/verificationCode.model";
 
 export const registerHandler = catchErrors(async (req, res) => {
   //validate request
