@@ -1,4 +1,4 @@
-import { JWT_REFRESH_SECRET, JWT_SECRET } from "../contants/env";
+import { APP_ORIGIN, JWT_REFRESH_SECRET, JWT_SECRET } from "../contants/env";
 import jwt, { Secret, sign } from "jsonwebtoken";
 
 import VerificationCodeType from "../contants/verificationCodeType";
@@ -19,6 +19,8 @@ import {
   signToken,
   verifyToken,
 } from "../utils/jwt";
+import { sendMail } from "../utils/sendMail";
+import { getVerifyEmailTemplate } from "../utils/emailTemplate";
 
 export type CreateAccountParams = {
   email: string;
@@ -49,7 +51,17 @@ export const createAccount = async (data: CreateAccountParams) => {
     type: VerificationCodeType.EmailVerification,
     expiresAt: oneYearFromNow(),
   });
+
+  const url = `${APP_ORIGIN}/email/verify/${verificationCode._id}`;
   //send verification email
+  const { error } = await sendMail({
+    to: user.email,
+    ...getVerifyEmailTemplate(url),
+  });
+
+  if (error) {
+    console.log(error);
+  }
 
   //create session
   const session = await SessionModel.create({
