@@ -11,7 +11,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import ResetPasswordForm from "../components/ResetPasswordForm";
 
 function ResetPassword() {
-  const { searchParams } = useSearchParams();
+  const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
   const exp = Number(searchParams.get("exp"));
   const now = Date.now();
